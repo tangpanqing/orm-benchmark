@@ -2,8 +2,8 @@ package benchs
 
 import (
 	"fmt"
+	"gorm.io/driver/mysql"
 
-	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -11,7 +11,7 @@ import (
 var gormPrepared *gorm.DB
 
 func init() {
-	st := NewSuite("gorm_prep")
+	st := NewSuite("gorm_stmt")
 	st.InitF = func() {
 		st.AddBenchmark("Insert", 200*OrmMulti, GormPreparedInsert)
 		st.AddBenchmark("MultiInsert 100 row", 200*OrmMulti, GormPreparedInsertMulti)
@@ -19,9 +19,7 @@ func init() {
 		st.AddBenchmark("Read", 200*OrmMulti, GormPreparedRead)
 		st.AddBenchmark("MultiRead limit 100", 200*OrmMulti, GormPreparedReadSlice)
 		var err error
-		gormPrepared, err = gorm.Open(postgres.New(postgres.Config{
-			DSN: OrmSource,
-		}), &gorm.Config{
+		gormPrepared, err = gorm.Open(mysql.Open(OrmSource), &gorm.Config{
 			SkipDefaultTransaction: true,
 			PrepareStmt:            true,
 			Logger:                 logger.Default.LogMode(logger.Silent),

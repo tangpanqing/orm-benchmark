@@ -21,13 +21,13 @@ func initDB3() {
 			fax text NOT NULL,
 			web text NOT NULL,
 			age integer NOT NULL,
-			"right" boolean NOT NULL,
+			right_val boolean NOT NULL,
 			counter bigint NOT NULL,
 			CONSTRAINT beego_model_pkey PRIMARY KEY (id)
-			) WITH (OIDS=FALSE);`,
+			);`,
 	}
 
-	DB, err := sql.Open("postgres", OrmSource)
+	DB, err := sql.Open("mysql", OrmSource)
 	checkErr(err)
 	defer func() {
 		err := DB.Close()
@@ -44,14 +44,14 @@ func initDB3() {
 }
 
 type BeegoModel struct {
-	Id      int `orm:"auto"`
-	Name    string
-	Title   string
-	Fax     string
-	Web     string
-	Age     int
-	Right   bool
-	Counter int64
+	Id       int `orm:"auto"`
+	Name     string
+	Title    string
+	Fax      string
+	Web      string
+	Age      int
+	RightVal bool
+	Counter  int64
 }
 
 func NewBeegoModel() *BeegoModel {
@@ -61,14 +61,14 @@ func NewBeegoModel() *BeegoModel {
 	m.Fax = "99909990"
 	m.Web = "http://blog.milkpod29.me"
 	m.Age = 100
-	m.Right = true
+	m.RightVal = true
 	m.Counter = 1000
 
 	return m
 }
 
 func init() {
-	st := NewSuite("beego_orm")
+	st := NewSuite("beego")
 	st.InitF = func() {
 		st.AddBenchmark("Insert", 200*OrmMulti, BeegoOrmInsert)
 		st.AddBenchmark("MultiInsert 100 row", 200*OrmMulti, BeegoOrmInsertMulti)
@@ -76,7 +76,7 @@ func init() {
 		st.AddBenchmark("Read", 200*OrmMulti, BeegoOrmRead)
 		st.AddBenchmark("MultiRead limit 100", 200*OrmMulti, BeegoOrmReadSlice)
 
-		err := orm.RegisterDataBase("default", "postgres", OrmSource, OrmMaxIdle, OrmMaxConn)
+		err := orm.RegisterDataBase("default", "mysql", OrmSource, OrmMaxIdle, OrmMaxConn)
 		checkErr(err)
 		orm.RegisterModel(new(BeegoModel))
 

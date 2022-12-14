@@ -21,12 +21,12 @@ func initDB2() {
 		fax text NOT NULL,
 		web text NOT NULL,
 		age integer NOT NULL,
-		"right" boolean NOT NULL,
+		right_val boolean NOT NULL,
 		counter bigint NOT NULL
-		) WITH (OIDS=FALSE);`,
+		);`,
 	}
 
-	DB, err := sql.Open("postgres", OrmSource)
+	DB, err := sql.Open("mysql", OrmSource)
 	checkErr(err)
 	defer func() {
 		err := DB.Close()
@@ -43,14 +43,14 @@ func initDB2() {
 }
 
 type XormModel struct {
-	Id      int
-	Name    string
-	Title   string
-	Fax     string
-	Web     string
-	Age     int
-	Right   bool
-	Counter int64
+	Id       int
+	Name     string
+	Title    string
+	Fax      string
+	Web      string
+	Age      int
+	RightVal bool
+	Counter  int64
 }
 
 func NewXormModel() *XormModel {
@@ -60,7 +60,7 @@ func NewXormModel() *XormModel {
 	m.Fax = "99909990"
 	m.Web = "http://blog.milkpod29.me"
 	m.Age = 100
-	m.Right = true
+	m.RightVal = true
 	m.Counter = 1000
 
 	return m
@@ -75,7 +75,7 @@ func init() {
 		st.AddBenchmark("Read", 200*OrmMulti, XormRead)
 		st.AddBenchmark("MultiRead limit 100", 200*OrmMulti, XormReadSlice)
 
-		engine, err := xorm.NewEngine("postgres", OrmSource)
+		engine, err := xorm.NewEngine("mysql", OrmSource)
 		if err != nil {
 			fmt.Print(err)
 		}

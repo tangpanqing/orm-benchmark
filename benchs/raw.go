@@ -3,18 +3,17 @@ package benchs
 import (
 	"database/sql"
 	"fmt"
-	"strconv"
 )
 
 var raw *sql.DB
 
 const (
-	rawInsertBaseSQL   = `INSERT INTO models (name, title, fax, web, age, "right", counter) VALUES `
-	rawInsertValuesSQL = `($1, $2, $3, $4, $5, $6, $7)`
+	rawInsertBaseSQL   = `INSERT INTO models (name, title, fax, web, age, right_val, counter) VALUES `
+	rawInsertValuesSQL = `(?, ?, ?, ?, ?, ?, ?)`
 	rawInsertSQL       = rawInsertBaseSQL + rawInsertValuesSQL
-	rawUpdateSQL       = `UPDATE models SET name = $1, title = $2, fax = $3, web = $4, age = $5, "right" = $6, counter = $7 WHERE id = $8`
-	rawSelectSQL       = `SELECT id, name, title, fax, web, age, "right", counter FROM models WHERE id = $1`
-	rawSelectMultiSQL  = `SELECT id, name, title, fax, web, age, "right", counter FROM models WHERE id > 0 LIMIT 100`
+	rawUpdateSQL       = `UPDATE models SET name = ?, title = ?, fax = ?, web = ?, age = ?, right_val = ?, counter = ? WHERE id = ?`
+	rawSelectSQL       = `SELECT id, name, title, fax, web, age, right_val, counter FROM models WHERE id = ?`
+	rawSelectMultiSQL  = `SELECT id, name, title, fax, web, age, right_val, counter FROM models WHERE id > 0 LIMIT 100`
 )
 
 func init() {
@@ -26,7 +25,7 @@ func init() {
 		st.AddBenchmark("Read", 200*OrmMulti, RawRead)
 		st.AddBenchmark("MultiRead limit 100", 200*OrmMulti, RawReadSlice)
 
-		raw, _ = sql.Open("pgx", OrmSource)
+		raw, _ = sql.Open("mysql", OrmSource)
 	}
 }
 
@@ -39,8 +38,9 @@ func RawInsert(b *B) {
 
 	for i := 0; i < b.N; i++ {
 		// pq dose not support the LastInsertId method.
-		_, err := raw.Exec(rawInsertSQL, m.Name, m.Title, m.Fax, m.Web, m.Age, m.Right, m.Counter)
+		_, err := raw.Exec(rawInsertSQL, m.Name, m.Title, m.Fax, m.Web, m.Age, m.RightVal, m.Counter)
 		if err != nil {
+			fmt.Println("----------------")
 			fmt.Println(err)
 			b.FailNow()
 		}
@@ -49,7 +49,7 @@ func RawInsert(b *B) {
 
 func rawInsert(m *Model) error {
 	// pq dose not support the LastInsertId method.
-	_, err := raw.Exec(rawInsertSQL, m.Name, m.Title, m.Fax, m.Web, m.Age, m.Right, m.Counter)
+	_, err := raw.Exec(rawInsertSQL, m.Name, m.Title, m.Fax, m.Web, m.Age, m.RightVal, m.Counter)
 	if err != nil {
 		return err
 	}
@@ -73,12 +73,11 @@ func RawInsertMulti(b *B) {
 		hoge := ""
 		for j := 0; j < 7; j++ {
 			if j != 6 {
-				hoge += "$" + strconv.Itoa(counter) + ","
+				hoge += "?" + ","
 			} else {
-				hoge += "$" + strconv.Itoa(counter)
+				hoge += "?"
 			}
 			counter++
-
 		}
 		if i != 99 {
 			valuesSQL += "(" + hoge + "),"
@@ -98,10 +97,14 @@ func RawInsertMulti(b *B) {
 			args[offset+2] = ms[j].Fax
 			args[offset+3] = ms[j].Web
 			args[offset+4] = ms[j].Age
-			args[offset+5] = ms[j].Right
+			args[offset+5] = ms[j].RightVal
 			args[offset+6] = ms[j].Counter
 		}
 		// pq dose not support the LastInsertId method.
+
+		//fmt.Println(query)
+		//fmt.Println(args)
+
 		_, err := raw.Exec(query, args...)
 		if err != nil {
 			fmt.Println(err)
@@ -123,7 +126,7 @@ func RawUpdate(b *B) {
 	})
 
 	for i := 0; i < b.N; i++ {
-		_, err := raw.Exec(rawUpdateSQL, m.Name, m.Title, m.Fax, m.Web, m.Age, m.Right, m.Counter, m.Id)
+		_, err := raw.Exec(rawUpdateSQL, m.Name, m.Title, m.Fax, m.Web, m.Age, m.RightVal, m.Counter, m.Id)
 		if err != nil {
 			fmt.Println(err)
 			b.FailNow()
@@ -153,7 +156,7 @@ func RawRead(b *B) {
 			&mout.Fax,
 			&mout.Web,
 			&mout.Age,
-			&mout.Right,
+			&mout.RightVal,
 			&mout.Counter,
 		)
 		if err != nil {
@@ -198,7 +201,7 @@ func RawReadSlice(b *B) {
 				&models[j].Fax,
 				&models[j].Web,
 				&models[j].Age,
-				&models[j].Right,
+				&models[j].RightVal,
 				&models[j].Counter,
 			)
 			if err != nil {

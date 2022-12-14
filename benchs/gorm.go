@@ -2,8 +2,7 @@ package benchs
 
 import (
 	"fmt"
-
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -18,15 +17,14 @@ func init() {
 		st.AddBenchmark("Update", 200*OrmMulti, GormUpdate)
 		st.AddBenchmark("Read", 200*OrmMulti, GormRead)
 		st.AddBenchmark("MultiRead limit 100", 200*OrmMulti, GormReadSlice)
+
 		var err error
-		gormdb, err = gorm.Open(postgres.New(postgres.Config{
-			DSN:                  OrmSource,
-			PreferSimpleProtocol: true, // disables implicit prepared statement usage
-		}), &gorm.Config{
+		gormdb, err = gorm.Open(mysql.Open(OrmSource), &gorm.Config{
 			SkipDefaultTransaction: true,
 			PrepareStmt:            false,
 			Logger:                 logger.Default.LogMode(logger.Silent),
 		})
+
 		if err != nil {
 			fmt.Println(err)
 		}

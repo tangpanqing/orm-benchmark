@@ -3,7 +3,6 @@ package benchs
 import (
 	"database/sql"
 	"fmt"
-	"strconv"
 )
 
 func init() {
@@ -15,7 +14,7 @@ func init() {
 		st.AddBenchmark("Read", 200*OrmMulti, RawStmtRead)
 		st.AddBenchmark("MultiRead limit 100", 200*OrmMulti, RawStmtReadSlice)
 
-		raw, _ = sql.Open("pgx", OrmSource)
+		raw, _ = sql.Open("mysql", OrmSource)
 	}
 }
 
@@ -39,7 +38,7 @@ func RawStmtInsert(b *B) {
 
 	for i := 0; i < b.N; i++ {
 		// pq dose not support the LastInsertId method.
-		_, err := stmt.Exec(m.Name, m.Title, m.Fax, m.Web, m.Age, m.Right, m.Counter)
+		_, err := stmt.Exec(m.Name, m.Title, m.Fax, m.Web, m.Age, m.RightVal, m.Counter)
 		if err != nil {
 			fmt.Println(err)
 			b.FailNow()
@@ -65,9 +64,9 @@ func RawStmtInsertMulti(b *B) {
 		hoge := ""
 		for j := 0; j < 7; j++ {
 			if j != 6 {
-				hoge += "$" + strconv.Itoa(counter) + ","
+				hoge += "?" + ","
 			} else {
-				hoge += "$" + strconv.Itoa(counter)
+				hoge += "?"
 			}
 			counter++
 
@@ -99,7 +98,7 @@ func RawStmtInsertMulti(b *B) {
 			args[offset+2] = ms[j].Fax
 			args[offset+3] = ms[j].Web
 			args[offset+4] = ms[j].Age
-			args[offset+5] = ms[j].Right
+			args[offset+5] = ms[j].RightVal
 			args[offset+6] = ms[j].Counter
 		}
 		// pq dose not support the LastInsertId method.
@@ -131,7 +130,7 @@ func RawStmtUpdate(b *B) {
 	}()
 
 	for i := 0; i < b.N; i++ {
-		_, err := stmt.Exec(m.Name, m.Title, m.Fax, m.Web, m.Age, m.Right, m.Counter, m.Id)
+		_, err := stmt.Exec(m.Name, m.Title, m.Fax, m.Web, m.Age, m.RightVal, m.Counter, m.Id)
 		if err != nil {
 			fmt.Println(err)
 			b.FailNow()
@@ -168,7 +167,7 @@ func RawStmtRead(b *B) {
 			&mout.Fax,
 			&mout.Web,
 			&mout.Age,
-			&mout.Right,
+			&mout.RightVal,
 			&mout.Counter,
 		)
 		if err != nil {
@@ -219,7 +218,7 @@ func RawStmtReadSlice(b *B) {
 				&models[j].Fax,
 				&models[j].Web,
 				&models[j].Age,
-				&models[j].Right,
+				&models[j].RightVal,
 				&models[j].Counter,
 			)
 			if err != nil {
