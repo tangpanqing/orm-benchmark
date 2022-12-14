@@ -24,7 +24,7 @@ See [`go.mod`](https://github.com/frederikhors/orm-benchmark/blob/master/go.mod)
 ### Run
 
 ```shell
-go get github.com/frederikhors/orm-benchmark
+go get github.com/tangpanqing/orm-benchmark
 # build
 go install
 # all
