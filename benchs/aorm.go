@@ -184,9 +184,13 @@ func AormReadSlice(b *B) {
 		var models []AormModel
 		var where []aorm.WhereItem
 		where = append(where, aorm.WhereItem{Field: "id", Opt: aorm.Gt, Val: 0})
-		if err := aorm.Use(ao).Table("aorm_model").WhereArr(where).Limit(0, 100).GetManyNew(&models); err != nil {
+		if err := aorm.Use(ao).Table("aorm_model").WhereArr(where).Limit(0, 100).GetMany(&models); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}
+
+		//for i := 0; i < len(models); i++ {
+		//	fmt.Println(models[i])
+		//}
 	}
 }

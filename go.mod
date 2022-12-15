@@ -6,7 +6,7 @@ require (
 	github.com/astaxie/beego v1.12.3
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/lib/pq v1.10.7
-	github.com/tangpanqing/aorm v1.0.8
+	github.com/tangpanqing/aorm v1.0.9
 	gorm.io/driver/mysql v1.4.4
 	gorm.io/gorm v1.24.2
 	xorm.io/xorm v1.3.2
