@@ -14,17 +14,17 @@ func initDB3() {
 
 	sqls := []string{
 		`DROP TABLE IF EXISTS beego_model;`,
-		`CREATE TABLE beego_model (
-			id SERIAL NOT NULL,
-			name text NOT NULL,
-			title text NOT NULL,
-			fax text NOT NULL,
-			web text NOT NULL,
-			age integer NOT NULL,
-			right_val boolean NOT NULL,
-			counter bigint NOT NULL,
-			CONSTRAINT beego_model_pkey PRIMARY KEY (id)
-			);`,
+		"CREATE TABLE beego_model (" +
+			"id int NOT NULL AUTO_INCREMENT," +
+			"name text NOT NULL," +
+			"title text NOT NULL," +
+			"fax text NOT NULL," +
+			"web text NOT NULL," +
+			"age int NOT NULL," +
+			"right_val boolean NOT NULL," +
+			"counter int NOT NULL," +
+			"CONSTRAINT model_pkey PRIMARY KEY (`id`)" +
+			");",
 	}
 
 	DB, err := sql.Open("mysql", OrmSource)
@@ -76,7 +76,7 @@ func init() {
 		st.AddBenchmark("Read", 200*OrmMulti, BeegoOrmRead)
 		st.AddBenchmark("MultiRead limit 100", 200*OrmMulti, BeegoOrmReadSlice)
 
-		err := orm.RegisterDataBase("default", "mysql", OrmSource, OrmMaxIdle, OrmMaxConn)
+		err := orm.RegisterDataBase("default", "mysql", OrmSource)
 		checkErr(err)
 		orm.RegisterModel(new(BeegoModel))
 

@@ -53,7 +53,7 @@ func wrapExecute(b *B, cbk func()) {
 
 func initDB() {
 	sqls := []string{
-		"DROP TABLE IF EXISTS models;",
+		`DROP TABLE IF EXISTS models;`,
 		"CREATE TABLE models (" +
 			"id int NOT NULL AUTO_INCREMENT," +
 			"name text NOT NULL," +
@@ -63,7 +63,7 @@ func initDB() {
 			"age int NOT NULL," +
 			"right_val boolean NOT NULL," +
 			"counter int NOT NULL," +
-			"PRIMARY KEY (`id`)" +
+			"CONSTRAINT model_pkey PRIMARY KEY (`id`)" +
 			");",
 	}
 

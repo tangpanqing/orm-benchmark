@@ -14,16 +14,17 @@ func initDB2() {
 
 	sqls := []string{
 		`DROP TABLE IF EXISTS xorm_model;`,
-		`CREATE TABLE xorm_model (
-		id integer NOT NULL,
-		name text NOT NULL,
-		title text NOT NULL,
-		fax text NOT NULL,
-		web text NOT NULL,
-		age integer NOT NULL,
-		right_val boolean NOT NULL,
-		counter bigint NOT NULL
-		);`,
+		"CREATE TABLE xorm_model (" +
+			"id int NOT NULL AUTO_INCREMENT," +
+			"name text NOT NULL," +
+			"title text NOT NULL," +
+			"fax text NOT NULL," +
+			"web text NOT NULL," +
+			"age int NOT NULL," +
+			"right_val boolean NOT NULL," +
+			"counter int NOT NULL," +
+			"CONSTRAINT model_pkey PRIMARY KEY (`id`)" +
+			");",
 	}
 
 	DB, err := sql.Open("mysql", OrmSource)
@@ -161,27 +162,25 @@ func XormRead(b *B) {
 	}
 }
 
-func XormReadSlice(_ *B) {
-	panic(fmt.Errorf("doesn't work"))
-	//var m *XormModel
-	//wrapExecute(b, func() {
-	//	initDB2()
-	//	m = NewXormModel()
-	//	for i := 0; i < 100; i++ {
-	//		m.Id = 0
-	//		if _, err := xo.Insert(m); err != nil {
-	//			fmt.Println(err)
-	//			b.FailNow()
-	//		}
-	//	}
-	//})
-	//
-	//for i := 0; i < b.N; i++ {
-	//	panic(fmt.Errorf("doesn't work"))
-	//	var models []XormModel
-	//	if err := xo.Table("xorm_model").Where("id > ?", 0).Limit(100).Find(&models); err != nil {
-	//		fmt.Println(err)
-	//		b.FailNow()
-	//	}
-	//}
+func XormReadSlice(b *B) {
+	var m *XormModel
+	wrapExecute(b, func() {
+		initDB2()
+		m = NewXormModel()
+		for i := 0; i < 100; i++ {
+			m.Id = 0
+			if _, err := xo.Insert(m); err != nil {
+				fmt.Println(err)
+				b.FailNow()
+			}
+		}
+	})
+
+	for i := 0; i < b.N; i++ {
+		var models []XormModel
+		if err := xo.Table("xorm_model").Where("id > ?", 0).Limit(100).Find(&models); err != nil {
+			fmt.Println(err)
+			b.FailNow()
+		}
+	}
 }

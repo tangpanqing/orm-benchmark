@@ -11,7 +11,7 @@ var ao *sql.DB
 
 func initDB2Aorm() {
 	sqls := []string{
-		"DROP TABLE IF EXISTS aorm_model;",
+		`DROP TABLE IF EXISTS aorm_model;`,
 		"CREATE TABLE aorm_model (" +
 			"id int NOT NULL AUTO_INCREMENT," +
 			"name text NOT NULL," +
@@ -21,7 +21,7 @@ func initDB2Aorm() {
 			"age int NOT NULL," +
 			"right_val boolean NOT NULL," +
 			"counter int NOT NULL," +
-			"PRIMARY KEY (`id`)" +
+			"CONSTRAINT model_pkey PRIMARY KEY (`id`)" +
 			");",
 	}
 
