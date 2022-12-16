@@ -17,7 +17,7 @@ All package run in no-cache mode.
 - [beego/orm v1.12.3](https://github.com/astaxie/beego/tree/master/orm)
 - [gorm v1.24.2](https://github.com/go-gorm/gorm)
 - [xorm v1.3.2](https://github.com/xormplus/xorm)
-- [aorm v1.0.9](https://github.com/tangpanqing/aorm)
+- [aorm v1.0.11](https://github.com/tangpanqing/aorm)
 
 See [`go.mod`](https://github.com/frederikhors/orm-benchmark/blob/master/go.mod) for their latest versions.
 

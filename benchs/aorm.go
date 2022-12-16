@@ -103,24 +103,20 @@ func AormInsert(b *B) {
 }
 
 func AormInsertMulti(b *B) {
-	panic(fmt.Errorf("doesn't work"))
-	//var ms []*AormModel
-	//wrapExecute(b, func() {
-	//	initDB2Aorm()
-	//	ms = make([]*AormModel, 0, 100)
-	//	for i := 0; i < 100; i++ {
-	//		ms = append(ms, NewAormModel())
-	//	}
-	//})
-	//for i := 0; i < b.N; i++ {
-	//	for _, m := range ms {
-	//		m.Id = 0
-	//	}
-	//	if _, err := ao.InsertMulti(&ms); err != nil {
-	//		fmt.Println(err)
-	//		b.FailNow()
-	//	}
-	//}
+	var ms []AormModel
+	wrapExecute(b, func() {
+		initDB2Aorm()
+		ms = make([]AormModel, 0, 100)
+		for i := 0; i < 100; i++ {
+			ms = append(ms, NewAormModel())
+		}
+	})
+	for i := 0; i < b.N; i++ {
+		if _, err := aorm.Use(ao).InsertBatch(&ms); err != nil {
+			fmt.Println(err)
+			b.FailNow()
+		}
+	}
 }
 
 func AormUpdate(b *B) {
