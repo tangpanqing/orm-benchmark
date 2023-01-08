@@ -5,6 +5,8 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/tangpanqing/aorm"
+	"github.com/tangpanqing/aorm/builder"
+	"github.com/tangpanqing/aorm/null"
 )
 
 var ao *sql.DB
@@ -42,25 +44,25 @@ func initDB2Aorm() {
 }
 
 type AormModel struct {
-	Id       aorm.Int
-	Name     aorm.String
-	Title    aorm.String
-	Fax      aorm.String
-	Web      aorm.String
-	Age      aorm.Int
-	RightVal aorm.Bool
-	Counter  aorm.Int
+	Id       null.Int
+	Name     null.String
+	Title    null.String
+	Fax      null.String
+	Web      null.String
+	Age      null.Int
+	RightVal null.Bool
+	Counter  null.Int
 }
 
 func NewAormModel() AormModel {
 	m := AormModel{
-		Name:     aorm.StringFrom("Orm Benchmark"),
-		Title:    aorm.StringFrom("Just a Benchmark for fun"),
-		Fax:      aorm.StringFrom("99909990"),
-		Web:      aorm.StringFrom("http://blog.milkpod29.me"),
-		Age:      aorm.IntFrom(100),
-		RightVal: aorm.BoolFrom(true),
-		Counter:  aorm.IntFrom(1000),
+		Name:     null.StringFrom("Orm Benchmark"),
+		Title:    null.StringFrom("Just a Benchmark for fun"),
+		Fax:      null.StringFrom("99909990"),
+		Web:      null.StringFrom("http://blog.milkpod29.me"),
+		Age:      null.IntFrom(100),
+		RightVal: null.BoolFrom(true),
+		Counter:  null.IntFrom(1000),
 	}
 
 	return m
@@ -134,7 +136,7 @@ func AormUpdate(b *B) {
 	})
 
 	for i := 0; i < b.N; i++ {
-		if _, err := aorm.Use(ao).Where(&AormModel{Id: aorm.IntFrom(lastId)}).Update(&m); err != nil {
+		if _, err := aorm.Use(ao).Where(&AormModel{Id: null.IntFrom(lastId)}).Update(&m); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}
@@ -156,7 +158,7 @@ func AormRead(b *B) {
 
 	var mm AormModel
 	for i := 0; i < b.N; i++ {
-		if err := aorm.Use(ao).Where(&AormModel{Id: aorm.IntFrom(lastId)}).GetOne(&mm); err != nil {
+		if err := aorm.Use(ao).Table("aorm_model").Where(&AormModel{Id: null.IntFrom(lastId)}).GetOne(&mm); err != nil {
 			fmt.Println(err)
 			b.FailNow()
 		}
@@ -178,8 +180,8 @@ func AormReadSlice(b *B) {
 
 	for i := 0; i < b.N; i++ {
 		var models []AormModel
-		var where []aorm.WhereItem
-		where = append(where, aorm.WhereItem{Field: "id", Opt: aorm.Gt, Val: 0})
+		var where []builder.WhereItem
+		where = append(where, builder.WhereItem{Field: "id", Opt: builder.Gt, Val: 0})
 		if err := aorm.Use(ao).Table("aorm_model").WhereArr(where).Limit(0, 100).GetMany(&models); err != nil {
 			fmt.Println(err)
 			b.FailNow()
